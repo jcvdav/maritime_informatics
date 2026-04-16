@@ -21,9 +21,9 @@ mex_fishing_regions <- st_read(here::here("data/raw/mexico_fishing_regions.gpkg"
 # rejoin port attributes by nearest feature (since st_voronoi loses them).
 voronoi <- mex_ports_sf |>
   st_union() |>
-  st_voronoi(bOnlyEdges = F) |>
+  st_voronoi() |>
   st_collection_extract() |>
-  st_intersection(mex_fishing_regions) |>
+  st_crop(mex_fishing_regions) |>
   st_as_sf() |>
   rename(geometry = x) |>
   st_join(mex_ports_sf, st_nearest_feature)
@@ -31,6 +31,8 @@ voronoi <- mex_ports_sf |>
 # Save as geopackage and as CSV with WKT (for BigQuery upload)
 write_sf(obj = voronoi, dsn = here::here("data", "processed", "voronoi_ports.gpkg"))
 write_csv(x = voronoi |>
+            st_transform(crs = "EPSG:4326") |>
+            st_make_valid() |> 
             mutate(geography = st_as_text(geometry)) |>
             st_drop_geometry(),
           file = here::here("data", "processed", "voronoi_ports_wkt.csv"))

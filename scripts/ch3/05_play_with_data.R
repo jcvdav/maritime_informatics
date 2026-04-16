@@ -54,7 +54,7 @@ large_areas |>
 # b) Write the query locally, execute via bq query < scripts/ch3/04_vessels_inside_area.sql (see sql script)
 # c) Execute the query from within R. This is a bit annoying, but it works:
 # d) Combine dplyr verbs as much as possible, and swith to SQL when needed
-# e) Use a crossjoin
+# e) Use a crossjoin. This is flexible to multiple ports being used.
 
 # This is approach c: Run the query via R
 sql('SELECT DISTINCT vessel_rnpa
@@ -81,7 +81,7 @@ tracks |>
 # Final option... use a cross-join and two lazy tables
 # First define the object that contains the geometry
 target_port <- ports |> 
-  filter(port_id == "04002") |> 
+  filter(port_id %in% c("04002", "30010", "04009")) |> 
   select(port_geography = geography)
 
 # Then perform a cross join. Once they are together, perform the spatial intersection.
