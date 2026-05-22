@@ -31,7 +31,7 @@ tuna_longline <- info |>
 tracks <- vms |>
   inner_join(tuna_longline, by = join_by("vessel_rnpa")) |>
   filter(year == 2024) |>
-  select(vessel_rnpa, datetime, lon, lat) |>
+  select(vessel_rnpa, datetime, lon, lat, implied_speed_knots) |>
   collect()
 
 # Convert to sf points with WGS84 projection
